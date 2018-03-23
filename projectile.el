@@ -3125,7 +3125,7 @@ to run the replacement."
   (dired-other-frame (projectile-project-root)))
 
 ;;;###autoload
-(defun projectile-vc (&optional project-root)
+(defun projectile-vc (&optional arg)
   "Open `vc-dir' at the root of the project.
 
 For git projects `magit-status-internal' is used if available.
@@ -3135,11 +3135,13 @@ If PROJECT-ROOT is given, it is opened instead of the project
 root directory of the current buffer file.  If interactively
 called with a prefix argument, the user is prompted for a project
 directory to open."
-  (interactive (list (projectile-completing-read
-                      "Open project VC in: "
-                      projectile-known-projects)))
-  (or project-root (setq project-root (projectile-project-root)))
-  (let ((vcs (projectile-project-vcs project-root)))
+  (interactive "P")
+  (let* ((project-root (if arg
+                           (projectile-completing-read
+                            "Open project VC in: "
+                            projectile-known-projects)
+                        (projectile-project-root)))
+         (vcs (projectile-project-vcs project-root)))
     (cl-case vcs
       (git
        (cond ((fboundp 'magit-status-internal)
